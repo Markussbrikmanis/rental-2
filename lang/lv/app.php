@@ -45,6 +45,9 @@ return [
             'meters' => 'Skaitītāji',
             'reports' => 'Atskaites',
             'exports' => 'Eksports',
+            'my_contracts' => 'Mani līgumi',
+            'my_invoices' => 'Mani rēķini',
+            'utility_readings' => 'Komunālie rādījumi',
         ],
         'topbar' => [
             'profile' => 'Profils',
@@ -211,6 +214,37 @@ return [
                     'recent_heading' => 'Jaunākie rēķini',
                     'overdue_heading' => 'Kavētie rēķini',
                     'outstanding' => 'Neapmaksāts',
+                ],
+            ],
+            'tenant' => [
+                'no_profile' => 'Šim īrnieka kontam vēl nav piesaistīts īrnieka profils. Ja īpašnieks jau izveidoja jūsu ierakstu, pārliecinieties, ka kontā izmantotais e-pasts sakrīt ar īrnieka e-pastu.',
+                'kpis' => [
+                    'active_contracts' => 'Aktīvie līgumi',
+                    'properties' => ':count īpašumi',
+                    'unpaid_invoices' => 'Neapmaksāti rēķini',
+                    'paid_invoices' => ':count apmaksāti',
+                    'outstanding_total' => 'Kopā apmaksai',
+                    'meters' => ':count aktīvi skaitītāji',
+                    'billing_name' => 'Maksātāja dati',
+                ],
+                'quick_actions' => [
+                    'heading' => 'Ātrās darbības',
+                    'description' => 'Atveriet savus līgumus, rēķinus un iesniedziet skaitītāju rādījumus.',
+                ],
+                'next_invoice' => [
+                    'heading' => 'Tuvākais maksājums',
+                    'outstanding' => 'Apmaksai',
+                    'open' => 'Atvērt rēķinu',
+                    'empty' => 'Šobrīd nav atvērta neapmaksāta rēķina.',
+                ],
+                'contracts' => [
+                    'heading' => 'Līgumu pārskats',
+                    'empty' => 'Līgumi vēl nav pieejami.',
+                ],
+                'invoices' => [
+                    'heading' => 'Jaunākie rēķini',
+                    'outstanding' => 'Neapmaksāts',
+                    'empty' => 'Rēķini vēl nav pieejami.',
                 ],
             ],
         ],
@@ -661,6 +695,61 @@ return [
             ],
             'empty' => [
                 'description' => 'Šim skaitītājam vēl nav reģistrētu rādījumu.',
+            ],
+        ],
+        'tenant_portal' => [
+            'common' => [
+                'no_profile' => 'Jūsu kontam vēl nav piesaistīts īrnieka profils.',
+                'property_and_unit' => 'Īpašums un vienība',
+                'outstanding' => 'Neapmaksāts',
+                'last_reading' => 'Pēdējais rādījums',
+                'no_data' => 'Nav datu',
+            ],
+            'leases' => [
+                'index' => [
+                    'page_title' => 'Mani līgumi',
+                    'heading' => 'Mani līgumi',
+                    'description' => 'Skatiet savus aktīvos un iepriekšējos nomas līgumus, vienības un regulārās maksas.',
+                ],
+                'empty' => [
+                    'description' => 'Līgumi vēl nav pievienoti.',
+                ],
+                'sections' => [
+                    'charges' => 'Regulārās maksas',
+                ],
+            ],
+            'invoices' => [
+                'index' => [
+                    'page_title' => 'Mani rēķini',
+                    'heading' => 'Mani rēķini',
+                    'description' => 'Pārskatiet savus rēķinus, lejupielādējiet PDF un atveriet drukas skatu.',
+                ],
+                'show' => [
+                    'period' => 'Periods',
+                    'payments' => 'Maksājumi',
+                    'empty_payments' => 'Maksājumi vēl nav reģistrēti.',
+                ],
+                'empty' => [
+                    'description' => 'Rēķini vēl nav sagatavoti.',
+                ],
+            ],
+            'meters' => [
+                'index' => [
+                    'page_title' => 'Komunālie rādījumi',
+                    'heading' => 'Komunālie rādījumi',
+                    'description' => 'Ievadiet īpašnieka definēto skaitītāju rādījumus savām aktīvajām vienībām.',
+                ],
+                'empty' => [
+                    'description' => 'Aktīvajām vienībām nav pieejamu skaitītāju.',
+                ],
+                'form' => [
+                    'heading' => 'Pievienot rādījumu',
+                    'notes' => 'Piezīmes',
+                    'validation_error' => 'Rādījumu neizdevās saglabāt. Pārbaudiet datumu un ievadītos laukus.',
+                ],
+                'history' => [
+                    'heading' => 'Pēdējie rādījumi',
+                ],
             ],
         ],
         'reminders' => [

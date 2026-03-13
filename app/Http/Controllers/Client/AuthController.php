@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Client;
 
 use App\Enums\UserRole;
 use App\Http\Controllers\Controller;
+use App\Models\TenantProfile;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -41,6 +42,8 @@ class AuthController extends Controller
 
         $request->session()->regenerate();
 
+        $this->syncTenantProfile(Auth::user());
+
         return redirect()->route('client.panel');
     }
 
@@ -61,6 +64,7 @@ class AuthController extends Controller
         ], trans('app.validation.messages'), trans('app.validation.attributes'));
 
         $user = User::create($validated);
+        $this->syncTenantProfile($user);
 
         Auth::login($user);
         $request->session()->regenerate();
@@ -76,5 +80,25 @@ class AuthController extends Controller
         $request->session()->regenerateToken();
 
         return redirect()->route('client.login');
+    }
+
+    private function syncTenantProfile(?User $user): void
+    {
+        if ($user === null || ! $user->isTenant()) {
+            return;
+        }
+
+        if ($user->tenantProfile()->exists()) {
+            return;
+        }
+
+        TenantProfile::query()
+            ->whereNull('user_id')
+            ->where('email', $user->email)
+            ->oldest('id')
+            ->first()
+            ?->update([
+                'user_id' => $user->id,
+            ]);
     }
 }

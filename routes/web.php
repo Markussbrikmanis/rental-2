@@ -14,6 +14,9 @@ use App\Http\Controllers\Client\PaymentController;
 use App\Http\Controllers\Client\ProfileController;
 use App\Http\Controllers\Client\PropertyUnitController;
 use App\Http\Controllers\Client\ReportController;
+use App\Http\Controllers\Client\TenantInvoiceController;
+use App\Http\Controllers\Client\TenantLeaseController;
+use App\Http\Controllers\Client\TenantMeterController;
 use App\Http\Controllers\Client\TenantProfileController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -106,5 +109,15 @@ Route::prefix('client')
             Route::get('atskaites/eksports', [ReportController::class, 'export'])->name('reports.export');
             Route::get('eksports', [ExportController::class, 'index'])->name('exports.index');
             Route::post('eksports', [ExportController::class, 'download'])->name('exports.download');
+        });
+
+        Route::middleware(['auth', 'role:tenant'])->group(function (): void {
+            Route::get('mani-ligumi', [TenantLeaseController::class, 'index'])->name('tenant-leases.index');
+            Route::get('mani-rekini', [TenantInvoiceController::class, 'index'])->name('tenant-invoices.index');
+            Route::get('mani-rekini/{invoice}', [TenantInvoiceController::class, 'show'])->name('tenant-invoices.show');
+            Route::get('mani-rekini/{invoice}/download', [TenantInvoiceController::class, 'download'])->name('tenant-invoices.download');
+            Route::get('mani-rekini/{invoice}/print', [TenantInvoiceController::class, 'print'])->name('tenant-invoices.print');
+            Route::get('mani-skaititaji', [TenantMeterController::class, 'index'])->name('tenant-meters.index');
+            Route::post('mani-skaititaji/{meter}/readings', [TenantMeterController::class, 'store'])->name('tenant-meter-readings.store');
         });
     });

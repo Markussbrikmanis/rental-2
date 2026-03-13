@@ -6,6 +6,7 @@ use App\Enums\UserRole;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
@@ -99,5 +100,13 @@ class User extends Authenticatable
     public function tenantProfiles(): HasMany
     {
         return $this->hasMany(TenantProfile::class, 'owner_id');
+    }
+
+    /**
+     * @return HasOne<TenantProfile, $this>
+     */
+    public function tenantProfile(): HasOne
+    {
+        return $this->hasOne(TenantProfile::class);
     }
 }

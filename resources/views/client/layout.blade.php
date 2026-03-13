@@ -81,6 +81,25 @@
                             >
                                 {{ __('app.client.navigation.exports') }}
                             </a>
+                        @elseif ($currentUser->isTenant())
+                            <a
+                                href="{{ route('client.tenant-leases.index') }}"
+                                class="client-shell__nav-link {{ request()->routeIs('client.tenant-leases.*') ? 'is-active' : '' }}"
+                            >
+                                {{ __('app.client.navigation.my_contracts') }}
+                            </a>
+                            <a
+                                href="{{ route('client.tenant-invoices.index') }}"
+                                class="client-shell__nav-link {{ request()->routeIs('client.tenant-invoices.*') ? 'is-active' : '' }}"
+                            >
+                                {{ __('app.client.navigation.my_invoices') }}
+                            </a>
+                            <a
+                                href="{{ route('client.tenant-meters.index') }}"
+                                class="client-shell__nav-link {{ request()->routeIs('client.tenant-meters.*') || request()->routeIs('client.tenant-meter-readings.*') ? 'is-active' : '' }}"
+                            >
+                                {{ __('app.client.navigation.utility_readings') }}
+                            </a>
                         @endif
                     </nav>
                 </aside>

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Client;
 
 use App\Http\Controllers\Controller;
+use App\Models\TenantProfile;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -102,6 +103,8 @@ class ProfileController extends Controller
 
         $user->update($validated);
 
+        $this->syncTenantProfile($user);
+
         return redirect()
             ->route('client.profile.edit')
             ->with('status', __('app.client.profile.messages.updated'));
@@ -177,5 +180,21 @@ class ProfileController extends Controller
         }
 
         $validated['invoice_logo_path'] = $uploadedLogo->store('invoice-logos', 'public');
+    }
+
+    private function syncTenantProfile(\App\Models\User $user): void
+    {
+        if (! $user->isTenant() || $user->tenantProfile()->exists()) {
+            return;
+        }
+
+        TenantProfile::query()
+            ->whereNull('user_id')
+            ->where('email', $user->email)
+            ->oldest('id')
+            ->first()
+            ?->update([
+                'user_id' => $user->id,
+            ]);
     }
 }

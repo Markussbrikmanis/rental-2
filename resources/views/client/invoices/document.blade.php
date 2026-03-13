@@ -4,19 +4,22 @@
         <meta charset="utf-8">
         <title>{{ $invoice->number }}</title>
         <style>
+            @page {
+                margin: {{ $render_mode === 'pdf' ? '8mm 10mm 10mm' : '12mm' }};
+            }
             * { box-sizing: border-box; }
             body {
                 margin: 0;
                 font-family: DejaVu Sans, sans-serif;
-                background: #f2f2f2;
+                background: {{ $render_mode === 'pdf' ? '#ffffff' : '#f2f2f2' }};
                 color: #111111;
             }
             .invoice-page {
-                width: 210mm;
-                min-height: 297mm;
-                margin: 0 auto;
+                width: {{ $render_mode === 'pdf' ? 'auto' : '210mm' }};
+                min-height: {{ $render_mode === 'pdf' ? 'auto' : '297mm' }};
+                margin: {{ $render_mode === 'pdf' ? '0' : '0 auto' }};
                 background: #ffffff;
-                padding: 28mm 20mm 26mm;
+                padding: {{ $render_mode === 'pdf' ? '10mm 8mm 12mm' : '28mm 20mm 26mm' }};
             }
             .invoice-toolbar {
                 width: 210mm;
