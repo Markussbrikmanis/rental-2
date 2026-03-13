@@ -2,8 +2,19 @@
 
 use App\Http\Controllers\Client\AuthController;
 use App\Http\Controllers\Client\ClientPanelController;
+use App\Http\Controllers\Client\ExportController;
+use App\Http\Controllers\Client\InvoiceController;
+use App\Http\Controllers\Client\InvoiceLineController;
+use App\Http\Controllers\Client\LeaseChargeRuleController;
+use App\Http\Controllers\Client\LeaseController;
+use App\Http\Controllers\Client\MeterController;
+use App\Http\Controllers\Client\MeterReadingController;
 use App\Http\Controllers\Client\OwnerPropertyController;
+use App\Http\Controllers\Client\PaymentController;
 use App\Http\Controllers\Client\ProfileController;
+use App\Http\Controllers\Client\PropertyUnitController;
+use App\Http\Controllers\Client\ReportController;
+use App\Http\Controllers\Client\TenantProfileController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -40,15 +51,60 @@ Route::prefix('client')
 
         Route::middleware(['auth', 'role:owner'])->group(function (): void {
             Route::resource('ipasumi', OwnerPropertyController::class)
-                ->except('show')
                 ->parameters(['ipasumi' => 'property'])
                 ->names([
                     'index' => 'properties.index',
                     'create' => 'properties.create',
                     'store' => 'properties.store',
+                    'show' => 'properties.show',
                     'edit' => 'properties.edit',
                     'update' => 'properties.update',
                     'destroy' => 'properties.destroy',
                 ]);
+
+            Route::resource('vienibas', PropertyUnitController::class)
+                ->except('show')
+                ->parameters(['vienibas' => 'unit'])
+                ->names('units');
+
+            Route::resource('irnieki', TenantProfileController::class)
+                ->except('show')
+                ->parameters(['irnieki' => 'tenant'])
+                ->names('tenants');
+
+            Route::resource('ligumi', LeaseController::class)
+                ->parameters(['ligumi' => 'lease'])
+                ->names('leases');
+            Route::post('ligumi/{lease}/generate-invoice', [LeaseController::class, 'generateInvoice'])->name('leases.generate-invoice');
+
+            Route::post('ligumi/{lease}/charge-rules', [LeaseChargeRuleController::class, 'store'])->name('charge-rules.store');
+            Route::get('ligumi/{lease}/charge-rules/{chargeRule}/edit', [LeaseChargeRuleController::class, 'edit'])->name('charge-rules.edit');
+            Route::put('ligumi/{lease}/charge-rules/{chargeRule}', [LeaseChargeRuleController::class, 'update'])->name('charge-rules.update');
+            Route::delete('ligumi/{lease}/charge-rules/{chargeRule}', [LeaseChargeRuleController::class, 'destroy'])->name('charge-rules.destroy');
+
+            Route::resource('rekini', InvoiceController::class)
+                ->only(['index', 'show', 'update', 'destroy'])
+                ->parameters(['rekini' => 'invoice'])
+                ->names('invoices');
+            Route::post('rekini/{invoice}/issue', [InvoiceController::class, 'issue'])->name('invoices.issue');
+            Route::post('rekini/{invoice}/send', [InvoiceController::class, 'send'])->name('invoices.send');
+            Route::post('rekini/{invoice}/remind', [InvoiceController::class, 'remind'])->name('invoices.remind');
+            Route::post('rekini/{invoice}/cancel', [InvoiceController::class, 'cancel'])->name('invoices.cancel');
+            Route::get('rekini/{invoice}/download', [InvoiceController::class, 'download'])->name('invoices.download');
+            Route::get('rekini/{invoice}/print', [InvoiceController::class, 'print'])->name('invoices.print');
+            Route::post('rekini/{invoice}/payments', [PaymentController::class, 'store'])->name('payments.store');
+            Route::post('rekini/{invoice}/lines', [InvoiceLineController::class, 'store'])->name('invoice-lines.store');
+            Route::put('rekini/{invoice}/lines/{line}', [InvoiceLineController::class, 'update'])->name('invoice-lines.update');
+            Route::delete('rekini/{invoice}/lines/{line}', [InvoiceLineController::class, 'destroy'])->name('invoice-lines.destroy');
+
+            Route::resource('skaititaji', MeterController::class)
+                ->parameters(['skaititaji' => 'meter'])
+                ->names('meters');
+            Route::post('skaititaji/{meter}/readings', [MeterReadingController::class, 'store'])->name('meter-readings.store');
+
+            Route::get('atskaites', [ReportController::class, 'index'])->name('reports.index');
+            Route::get('atskaites/eksports', [ReportController::class, 'export'])->name('reports.export');
+            Route::get('eksports', [ExportController::class, 'index'])->name('exports.index');
+            Route::post('eksports', [ExportController::class, 'download'])->name('exports.download');
         });
     });

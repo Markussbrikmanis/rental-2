@@ -39,6 +39,48 @@
                             >
                                 {{ __('app.client.navigation.properties') }}
                             </a>
+                            <a
+                                href="{{ route('client.units.index') }}"
+                                class="client-shell__nav-link {{ request()->routeIs('client.units.*') ? 'is-active' : '' }}"
+                            >
+                                {{ __('app.client.navigation.units') }}
+                            </a>
+                            <a
+                                href="{{ route('client.tenants.index') }}"
+                                class="client-shell__nav-link {{ request()->routeIs('client.tenants.*') ? 'is-active' : '' }}"
+                            >
+                                {{ __('app.client.navigation.tenants') }}
+                            </a>
+                            <a
+                                href="{{ route('client.leases.index') }}"
+                                class="client-shell__nav-link {{ request()->routeIs('client.leases.*') || request()->routeIs('client.charge-rules.*') ? 'is-active' : '' }}"
+                            >
+                                {{ __('app.client.navigation.leases') }}
+                            </a>
+                            <a
+                                href="{{ route('client.invoices.index') }}"
+                                class="client-shell__nav-link {{ request()->routeIs('client.invoices.*') ? 'is-active' : '' }}"
+                            >
+                                {{ __('app.client.navigation.invoices') }}
+                            </a>
+                            <a
+                                href="{{ route('client.meters.index') }}"
+                                class="client-shell__nav-link {{ request()->routeIs('client.meters.*') ? 'is-active' : '' }}"
+                            >
+                                {{ __('app.client.navigation.meters') }}
+                            </a>
+                            <a
+                                href="{{ route('client.reports.index') }}"
+                                class="client-shell__nav-link {{ request()->routeIs('client.reports.*') ? 'is-active' : '' }}"
+                            >
+                                {{ __('app.client.navigation.reports') }}
+                            </a>
+                            <a
+                                href="{{ route('client.exports.index') }}"
+                                class="client-shell__nav-link {{ request()->routeIs('client.exports.*') ? 'is-active' : '' }}"
+                            >
+                                {{ __('app.client.navigation.exports') }}
+                            </a>
                         @endif
                     </nav>
                 </aside>

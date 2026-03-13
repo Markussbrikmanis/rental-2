@@ -23,6 +23,19 @@ class User extends Authenticatable
         'name',
         'email',
         'role',
+        'invoice_number_format',
+        'invoice_sender_name',
+        'invoice_sender_address',
+        'invoice_sender_registration_number',
+        'invoice_sender_vat_number',
+        'invoice_sender_bank_name',
+        'invoice_sender_swift_code',
+        'invoice_sender_account_number',
+        'invoice_payment_terms_text',
+        'invoice_footer_text',
+        'invoice_logo_path',
+        'invoice_vat_enabled',
+        'invoice_vat_rate',
         'password',
     ];
 
@@ -47,6 +60,8 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
             'role' => UserRole::class,
+            'invoice_vat_enabled' => 'boolean',
+            'invoice_vat_rate' => 'decimal:2',
         ];
     }
 
@@ -65,11 +80,24 @@ class User extends Authenticatable
         return $this->role === UserRole::Tenant;
     }
 
+    public function invoiceNumberFormat(): string
+    {
+        return $this->invoice_number_format ?: '{year}-{num}';
+    }
+
     /**
      * @return HasMany<Property, $this>
      */
     public function properties(): HasMany
     {
         return $this->hasMany(Property::class);
+    }
+
+    /**
+     * @return HasMany<TenantProfile, $this>
+     */
+    public function tenantProfiles(): HasMany
+    {
+        return $this->hasMany(TenantProfile::class, 'owner_id');
     }
 }

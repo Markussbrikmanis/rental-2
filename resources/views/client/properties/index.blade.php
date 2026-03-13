@@ -107,15 +107,18 @@
                                         <td>{{ $property->notes ?: '—' }}</td>
                                         <td>{{ $property->address }}</td>
                                         <td>{{ $property->city }}</td>
-                                        <td>{{ $property->country }}</td>
-                                        <td>{{ number_format((float) $property->price, 2, ',', ' ') }} EUR</td>
-                                        <td>{{ $property->type->label() }}</td>
-                                        <td>{{ $property->acquired_at->format('d.m.Y') }}</td>
-                                        <td class="text-end">
-                                            <div class="d-inline-flex flex-wrap justify-content-end gap-2">
-                                                <a href="{{ route('client.properties.edit', $property) }}" class="btn btn-sm btn-outline-primary">
-                                                    {{ __('app.properties.actions.edit') }}
-                                                </a>
+                                    <td>{{ $property->country }}</td>
+                                    <td>{{ number_format((float) $property->price, 2, ',', ' ') }} EUR</td>
+                                    <td>{{ $property->type->label() }}</td>
+                                    <td>{{ $property->acquired_at->format('d.m.Y') }}</td>
+                                    <td class="text-end">
+                                        <div class="d-inline-flex flex-wrap justify-content-end gap-2">
+                                            <a href="{{ route('client.properties.show', $property) }}" class="btn btn-sm btn-outline-secondary">
+                                                {{ __('app.rental.common.view') }}
+                                            </a>
+                                            <a href="{{ route('client.properties.edit', $property) }}" class="btn btn-sm btn-outline-primary">
+                                                {{ __('app.properties.actions.edit') }}
+                                            </a>
                                                 <form method="POST" action="{{ route('client.properties.destroy', $property) }}">
                                                     @csrf
                                                     @method('DELETE')

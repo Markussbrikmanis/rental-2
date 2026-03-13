@@ -59,6 +59,18 @@ class OwnerPropertyController extends Controller
         ]);
     }
 
+    public function show(Request $request, Property $property): View
+    {
+        $this->ensureOwnership($request, $property);
+
+        return view('client.properties.show', [
+            'property' => $property->load([
+                'units.leases.tenantProfile',
+                'units.meters',
+            ]),
+        ]);
+    }
+
     public function update(Request $request, Property $property): RedirectResponse
     {
         $this->ensureOwnership($request, $property);

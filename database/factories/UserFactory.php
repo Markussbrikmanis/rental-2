@@ -29,6 +29,9 @@ class UserFactory extends Factory
             'email' => fake()->unique()->safeEmail(),
             'email_verified_at' => now(),
             'role' => UserRole::Tenant,
+            'invoice_number_format' => '{year}-{num}',
+            'invoice_vat_enabled' => false,
+            'invoice_vat_rate' => 21,
             'password' => static::$password ??= Hash::make('password'),
             'remember_token' => Str::random(10),
         ];
