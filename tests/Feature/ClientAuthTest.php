@@ -64,9 +64,9 @@ class ClientAuthTest extends TestCase
     public function test_client_panel_renders_for_each_supported_role(): void
     {
         $expectations = [
-            UserRole::Admin->value => 'Platformas kontrole',
-            UserRole::Owner->value => 'Īpašumu portfelis',
-            UserRole::Tenant->value => 'Īres pārskats',
+            UserRole::Admin->value => 'Administrators',
+            UserRole::Owner->value => 'Saņemts šomēnes',
+            UserRole::Tenant->value => 'Īrnieks',
         ];
 
         foreach ($expectations as $role => $text) {
