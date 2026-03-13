@@ -692,6 +692,7 @@ return [
             ],
             'messages' => [
                 'recorded' => 'Rādījums ir saglabāts.',
+                'must_not_be_lower_than_last' => 'Jaunais rādījums nedrīkst būt mazāks par pēdējo reģistrēto vērtību (:value).',
             ],
             'empty' => [
                 'description' => 'Šim skaitītājam vēl nav reģistrētu rādījumu.',

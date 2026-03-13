@@ -39,6 +39,7 @@
                             <div class="row g-4">
                                 @foreach ($lease->propertyUnit->meters as $meter)
                                     @php($lastReading = $meter->readings->first())
+                                    @php($nextMinimumValue = $lastReading ? number_format((float) $lastReading->value, 3, '.', '') : '0')
 
                                     <div class="col-12">
                                         <div class="border rounded-4 p-4">
@@ -77,7 +78,7 @@
                                                         </div>
                                                         <div class="col-md-6">
                                                             <label class="form-label">{{ __('app.rental.meter_readings.fields.value') }} ({{ $meter->unit }})</label>
-                                                            <input name="value" type="number" min="0" step="0.001" value="{{ old('value') }}" class="form-control @error('value') is-invalid @enderror" required>
+                                                            <input name="value" type="number" min="{{ $nextMinimumValue }}" step="0.001" value="{{ old('value') }}" class="form-control @error('value') is-invalid @enderror" required>
                                                             @error('value')<div class="invalid-feedback">{{ $message }}</div>@enderror
                                                         </div>
                                                         <div class="col-12">

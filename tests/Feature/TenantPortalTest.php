@@ -7,6 +7,7 @@ use App\Enums\UserRole;
 use App\Models\Invoice;
 use App\Models\Lease;
 use App\Models\Meter;
+use App\Models\MeterReading;
 use App\Models\Property;
 use App\Models\PropertyUnit;
 use App\Models\TenantProfile;
@@ -119,6 +120,90 @@ class TenantPortalTest extends TestCase
         $this->assertDatabaseMissing('meter_readings', [
             'meter_id' => $meter->id,
             'reading_date' => '2026-03-14 00:00:00',
+        ]);
+
+        Carbon::setTestNow();
+    }
+
+    public function test_tenant_cannot_submit_reading_lower_than_last_record_but_equal_is_allowed(): void
+    {
+        Carbon::setTestNow('2026-03-13 10:00:00');
+        [$tenant, $property, $unit, $invoice, $meter] = $this->tenantRentalContext();
+
+        MeterReading::factory()->create([
+            'meter_id' => $meter->id,
+            'reading_date' => '2026-03-12',
+            'value' => 120.500,
+        ]);
+
+        $this->actingAs($tenant)
+            ->post(route('client.tenant-meter-readings.store', $meter), [
+                'reading_date' => '2026-03-13',
+                'value' => '120.500',
+            ])
+            ->assertRedirect(route('client.tenant-meters.index'));
+
+        $this->actingAs($tenant)
+            ->from(route('client.tenant-meters.index'))
+            ->post(route('client.tenant-meter-readings.store', $meter), [
+                'reading_date' => '2026-03-13',
+                'value' => '120.499',
+            ])
+            ->assertRedirect(route('client.tenant-meters.index'))
+            ->assertSessionHasErrors('value');
+
+        $this->assertDatabaseHas('meter_readings', [
+            'meter_id' => $meter->id,
+            'reading_date' => '2026-03-13 00:00:00',
+            'value' => 120.500,
+        ]);
+
+        $this->assertDatabaseMissing('meter_readings', [
+            'meter_id' => $meter->id,
+            'reading_date' => '2026-03-13 00:00:00',
+            'value' => 120.499,
+        ]);
+
+        Carbon::setTestNow();
+    }
+
+    public function test_tenant_validation_uses_highest_value_on_latest_date_when_multiple_readings_exist(): void
+    {
+        Carbon::setTestNow('2026-03-13 10:00:00');
+        [$tenant, $property, $unit, $invoice, $meter] = $this->tenantRentalContext();
+
+        MeterReading::factory()->create([
+            'meter_id' => $meter->id,
+            'reading_date' => '2026-03-12',
+            'value' => 180.000,
+        ]);
+
+        MeterReading::factory()->create([
+            'meter_id' => $meter->id,
+            'reading_date' => '2026-03-12',
+            'value' => 220.000,
+        ]);
+
+        $this->actingAs($tenant)
+            ->from(route('client.tenant-meters.index'))
+            ->post(route('client.tenant-meter-readings.store', $meter), [
+                'reading_date' => '2026-03-13',
+                'value' => '200.000',
+            ])
+            ->assertRedirect(route('client.tenant-meters.index'))
+            ->assertSessionHasErrors('value');
+
+        $this->actingAs($tenant)
+            ->post(route('client.tenant-meter-readings.store', $meter), [
+                'reading_date' => '2026-03-13',
+                'value' => '220.000',
+            ])
+            ->assertRedirect(route('client.tenant-meters.index'));
+
+        $this->assertDatabaseHas('meter_readings', [
+            'meter_id' => $meter->id,
+            'reading_date' => '2026-03-13 00:00:00',
+            'value' => 220.000,
         ]);
 
         Carbon::setTestNow();

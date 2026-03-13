@@ -29,7 +29,10 @@ class TenantMeterController extends Controller
                     ->with([
                         'propertyUnit.property',
                         'propertyUnit.meters' => fn ($query) => $query->where('is_active', true)->orderBy('name'),
-                        'propertyUnit.meters.readings' => fn ($query) => $query->latest('reading_date'),
+                        'propertyUnit.meters.readings' => fn ($query) => $query
+                            ->orderByDesc('reading_date')
+                            ->orderByDesc('value')
+                            ->orderByDesc('id'),
                     ])
                     ->orderBy('start_date')
                     ->get()
@@ -43,11 +46,27 @@ class TenantMeterController extends Controller
 
         $today = Carbon::today();
         $earliestAllowedDate = $today->copy()->subDays(3);
+        $lastReading = $meter->readings()
+            ->orderByDesc('reading_date')
+            ->orderByDesc('value')
+            ->orderByDesc('id')
+            ->first();
 
         $validated = $request->validate(
             [
                 'reading_date' => ['required', 'date', 'after_or_equal:'.$earliestAllowedDate->toDateString(), 'before_or_equal:'.$today->toDateString()],
-                'value' => ['required', 'numeric', 'min:0'],
+                'value' => [
+                    'required',
+                    'numeric',
+                    'min:0',
+                    function (string $attribute, mixed $value, \Closure $fail) use ($lastReading): void {
+                        if ($lastReading !== null && (float) $value < (float) $lastReading->value) {
+                            $fail(__('app.rental.meter_readings.messages.must_not_be_lower_than_last', [
+                                'value' => number_format((float) $lastReading->value, 3, ',', ' '),
+                            ]));
+                        }
+                    },
+                ],
                 'notes' => ['nullable', 'string'],
             ],
             trans('app.validation.messages'),
