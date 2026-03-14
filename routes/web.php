@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\MarketingPageController;
 use App\Http\Controllers\Client\AuthController;
 use App\Http\Controllers\Client\AdminOwnerSubscriptionController;
 use App\Http\Controllers\Client\AdminUserController;
@@ -26,9 +27,10 @@ use App\Http\Controllers\Client\TenantProfileController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/', [MarketingPageController::class, 'home'])->name('marketing.home');
+Route::get('/cenas', [MarketingPageController::class, 'pricing'])->name('marketing.pricing');
+Route::get('/kontakti', [MarketingPageController::class, 'contact'])->name('marketing.contact');
+Route::get('/privatuma-politika', [MarketingPageController::class, 'privacy'])->name('marketing.privacy');
 
 Route::redirect('/login', '/client/login')->name('login');
 
