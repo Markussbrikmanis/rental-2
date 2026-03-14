@@ -222,30 +222,11 @@
                 </div>
             </div>
         @else
-            <div class="container py-5">
-                @if (session('status'))
-                    <div class="alert alert-success mb-4">
-                        {{ session('status') }}
-                    </div>
-                @endif
-
-                @if (session('error'))
-                    <div class="alert alert-danger mb-4">
-                        {{ session('error') }}
-                    </div>
-                @endif
-
-                @if ($errors->any())
-                    <div class="alert alert-danger mb-4">
-                        <ul class="mb-0 ps-3">
-                            @foreach ($errors->all() as $error)
-                                <li>{{ $error }}</li>
-                            @endforeach
-                        </ul>
-                    </div>
-                @endif
-
-                @yield('content')
+            <div class="auth-shell">
+                <div class="auth-shell__background"></div>
+                <div class="auth-shell__inner">
+                    @yield('content')
+                </div>
             </div>
         @endauth
     </body>
