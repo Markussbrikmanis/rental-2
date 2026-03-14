@@ -2,7 +2,7 @@
 
 @section('content')
     <div class="vstack gap-4 py-4">
-        <div class="d-flex flex-column flex-lg-row justify-content-between gap-3">
+        <div class="d-flex flex-column flex-lg-row justify-content-between gap-3 client-page-header">
             <div>
                 <h1 class="h2 mb-1">{{ $property->name }}</h1>
                 <p class="text-body-secondary mb-0">
@@ -10,7 +10,7 @@
                 </p>
             </div>
 
-            <div class="d-flex flex-wrap gap-2">
+            <div class="client-page-actions">
                 <a href="{{ route('client.units.create', ['property_id' => $property->id]) }}" class="btn btn-primary">{{ __('app.rental.units.actions.create') }}</a>
                 <a href="{{ route('client.properties.edit', $property) }}" class="btn btn-outline-secondary">{{ __('app.properties.actions.edit') }}</a>
             </div>

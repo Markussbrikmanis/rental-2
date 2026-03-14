@@ -13,6 +13,9 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->redirectGuestsTo(static fn (Request $request): string => route('client.login'));
+        $middleware->validateCsrfTokens(except: [
+            'cashier/*',
+        ]);
 
         $middleware->alias([
             'client.guest' => \App\Http\Middleware\RedirectIfAuthenticatedToClient::class,

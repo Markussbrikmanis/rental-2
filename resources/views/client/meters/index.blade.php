@@ -37,13 +37,22 @@
                                         <td>{{ $meter->utility_billing_mode->label() }}</td>
                                         <td>{{ $meter->rate_per_unit !== null ? number_format((float) $meter->rate_per_unit, 4, ',', ' ') : '—' }}</td>
                                         <td class="text-end">
-                                            <div class="d-inline-flex gap-2">
-                                                <a href="{{ route('client.meters.show', $meter) }}" class="btn btn-sm btn-outline-secondary">{{ __('app.rental.common.view') }}</a>
-                                                <a href="{{ route('client.meters.edit', $meter) }}" class="btn btn-sm btn-outline-primary">{{ __('app.rental.common.edit') }}</a>
+                                            <div class="client-row-actions">
+                                                <a href="{{ route('client.meters.show', $meter) }}" class="btn btn-sm btn-outline-secondary client-icon-btn" aria-label="{{ __('app.rental.common.view') }}" title="{{ __('app.rental.common.view') }}">
+                                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg>
+                                                    <span class="visually-hidden">{{ __('app.rental.common.view') }}</span>
+                                                </a>
+                                                <a href="{{ route('client.meters.edit', $meter) }}" class="btn btn-sm btn-outline-primary client-icon-btn" aria-label="{{ __('app.rental.common.edit') }}" title="{{ __('app.rental.common.edit') }}">
+                                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m4 20 4.5-1 9.5-9.5-3.5-3.5L5 15.5 4 20Z"/><path d="M13.5 6 17 9.5"/></svg>
+                                                    <span class="visually-hidden">{{ __('app.rental.common.edit') }}</span>
+                                                </a>
                                                 <form method="POST" action="{{ route('client.meters.destroy', $meter) }}">
                                                     @csrf
                                                     @method('DELETE')
-                                                    <button type="submit" class="btn btn-sm btn-outline-danger">{{ __('app.rental.common.delete') }}</button>
+                                                    <button type="submit" class="btn btn-sm btn-outline-danger client-icon-btn" aria-label="{{ __('app.rental.common.delete') }}" title="{{ __('app.rental.common.delete') }}">
+                                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>
+                                                        <span class="visually-hidden">{{ __('app.rental.common.delete') }}</span>
+                                                    </button>
                                                 </form>
                                             </div>
                                         </td>

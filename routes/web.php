@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\Client\AuthController;
+use App\Http\Controllers\Client\AdminOwnerSubscriptionController;
+use App\Http\Controllers\Client\AdminUserController;
 use App\Http\Controllers\Client\ClientPanelController;
 use App\Http\Controllers\Client\ExportController;
 use App\Http\Controllers\Client\InvoiceController;
@@ -9,8 +11,11 @@ use App\Http\Controllers\Client\LeaseChargeRuleController;
 use App\Http\Controllers\Client\LeaseController;
 use App\Http\Controllers\Client\MeterController;
 use App\Http\Controllers\Client\MeterReadingController;
+use App\Http\Controllers\Client\NewPasswordController;
+use App\Http\Controllers\Client\OwnerBillingController;
 use App\Http\Controllers\Client\OwnerPropertyController;
 use App\Http\Controllers\Client\PaymentController;
+use App\Http\Controllers\Client\PasswordResetLinkController;
 use App\Http\Controllers\Client\ProfileController;
 use App\Http\Controllers\Client\PropertyUnitController;
 use App\Http\Controllers\Client\ReportController;
@@ -26,6 +31,15 @@ Route::get('/', function () {
 });
 
 Route::redirect('/login', '/client/login')->name('login');
+
+Route::prefix('client')
+    ->middleware('client.guest')
+    ->group(function (): void {
+        Route::get('/forgot-password', [PasswordResetLinkController::class, 'create'])->name('password.request');
+        Route::post('/forgot-password', [PasswordResetLinkController::class, 'store'])->name('password.email');
+        Route::get('/reset-password/{token}', [NewPasswordController::class, 'create'])->name('password.reset');
+        Route::post('/reset-password', [NewPasswordController::class, 'store'])->name('password.store');
+    });
 
 Route::prefix('client')
     ->as('client.')
@@ -53,6 +67,13 @@ Route::prefix('client')
         });
 
         Route::middleware(['auth', 'role:owner'])->group(function (): void {
+            Route::get('abonements', [OwnerBillingController::class, 'index'])->name('billing.index');
+            Route::post('abonements/checkout', [OwnerBillingController::class, 'checkout'])->name('billing.checkout');
+            Route::post('abonements/swap', [OwnerBillingController::class, 'swap'])->name('billing.swap');
+            Route::get('abonements/portal', [OwnerBillingController::class, 'portal'])->name('billing.portal');
+            Route::get('abonements/success', [OwnerBillingController::class, 'success'])->name('billing.success');
+            Route::get('abonements/cancel', [OwnerBillingController::class, 'cancel'])->name('billing.cancel');
+
             Route::resource('ipasumi', OwnerPropertyController::class)
                 ->parameters(['ipasumi' => 'property'])
                 ->names([
@@ -109,6 +130,19 @@ Route::prefix('client')
             Route::get('atskaites/eksports', [ReportController::class, 'export'])->name('reports.export');
             Route::get('eksports', [ExportController::class, 'index'])->name('exports.index');
             Route::post('eksports', [ExportController::class, 'download'])->name('exports.download');
+        });
+
+        Route::middleware(['auth', 'role:admin'])->group(function (): void {
+            Route::get('users', [AdminUserController::class, 'index'])->name('admin.users.index');
+            Route::get('users/{user}/edit', [AdminUserController::class, 'edit'])->name('admin.users.edit');
+            Route::put('users/{user}', [AdminUserController::class, 'update'])->name('admin.users.update');
+            Route::delete('users/{user}', [AdminUserController::class, 'destroy'])->name('admin.users.destroy');
+            Route::post('users/{user}/send-password-reset', [AdminUserController::class, 'sendPasswordReset'])->name('admin.users.send-password-reset');
+            Route::get('owner-subscriptions', [AdminOwnerSubscriptionController::class, 'index'])->name('admin.owner-subscriptions.index');
+            Route::put('owner-subscriptions/{owner}', [AdminOwnerSubscriptionController::class, 'update'])->name('admin.owner-subscriptions.update');
+            Route::post('owner-subscriptions/plans', [AdminOwnerSubscriptionController::class, 'storePlan'])->name('admin.owner-subscriptions.plans.store');
+            Route::put('owner-subscriptions/plans/{plan}', [AdminOwnerSubscriptionController::class, 'updatePlan'])->name('admin.owner-subscriptions.plans.update');
+            Route::delete('owner-subscriptions/plans/{plan}', [AdminOwnerSubscriptionController::class, 'destroyPlan'])->name('admin.owner-subscriptions.plans.destroy');
         });
 
         Route::middleware(['auth', 'role:tenant'])->group(function (): void {

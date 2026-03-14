@@ -52,6 +52,38 @@ const initColumnFilters = (table, dataTable) => {
 };
 
 document.addEventListener('DOMContentLoaded', () => {
+    const shell = document.querySelector('[data-client-shell]');
+    const menuToggle = document.querySelector('[data-client-menu-toggle]');
+    const closeTriggers = document.querySelectorAll('[data-client-menu-close], [data-client-nav-link]');
+
+    if (shell && menuToggle) {
+        const setMenuState = (isOpen) => {
+            shell.classList.toggle('is-menu-open', isOpen);
+            menuToggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+            document.body.classList.toggle('client-menu-open', isOpen);
+        };
+
+        menuToggle.addEventListener('click', () => {
+            setMenuState(!shell.classList.contains('is-menu-open'));
+        });
+
+        closeTriggers.forEach((element) => {
+            element.addEventListener('click', () => setMenuState(false));
+        });
+
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape') {
+                setMenuState(false);
+            }
+        });
+
+        window.addEventListener('resize', () => {
+            if (window.innerWidth >= 768) {
+                setMenuState(false);
+            }
+        });
+    }
+
     document.querySelectorAll('[data-datatable]').forEach((table) => {
         const dataTable = new DataTable(table, {
             language: lvLanguage,

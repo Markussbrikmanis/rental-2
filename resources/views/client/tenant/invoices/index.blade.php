@@ -45,9 +45,15 @@
                                         <td>{{ $money($invoice->total) }}</td>
                                         <td>{{ $money($outstanding) }}</td>
                                         <td class="text-end">
-                                            <div class="d-inline-flex gap-2">
-                                                <a href="{{ route('client.tenant-invoices.show', $invoice) }}" class="btn btn-sm btn-outline-primary">{{ __('app.rental.common.view') }}</a>
-                                                <a href="{{ route('client.tenant-invoices.download', $invoice) }}" class="btn btn-sm btn-outline-secondary">{{ __('app.rental.documents.actions.download_pdf') }}</a>
+                                            <div class="client-row-actions">
+                                                <a href="{{ route('client.tenant-invoices.show', $invoice) }}" class="btn btn-sm btn-outline-primary client-icon-btn" aria-label="{{ __('app.rental.common.view') }}" title="{{ __('app.rental.common.view') }}">
+                                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg>
+                                                    <span class="visually-hidden">{{ __('app.rental.common.view') }}</span>
+                                                </a>
+                                                <a href="{{ route('client.tenant-invoices.download', $invoice) }}" class="btn btn-sm btn-outline-secondary client-icon-btn" aria-label="{{ __('app.rental.documents.actions.download_pdf') }}" title="{{ __('app.rental.documents.actions.download_pdf') }}">
+                                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 3v11"/><path d="m7 10 5 5 5-5"/><path d="M4 20h16"/></svg>
+                                                    <span class="visually-hidden">{{ __('app.rental.documents.actions.download_pdf') }}</span>
+                                                </a>
                                             </div>
                                         </td>
                                     </tr>

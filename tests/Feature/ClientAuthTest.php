@@ -3,7 +3,9 @@
 namespace Tests\Feature;
 
 use App\Enums\UserRole;
+use App\Models\SubscriptionPlan;
 use App\Models\User;
+use Illuminate\Support\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -25,21 +27,48 @@ class ClientAuthTest extends TestCase
 
     public function test_user_can_register_as_owner_or_tenant_and_is_logged_in(): void
     {
+        Carbon::setTestNow('2026-03-14 10:00:00');
+
+        $plan = SubscriptionPlan::factory()->create([
+            'trial_enabled' => true,
+            'trial_days' => 14,
+            'is_active' => true,
+            'is_public' => true,
+        ]);
+
         $response = $this->post('/client/register', [
             'name' => 'Owner Person',
             'email' => 'owner-person@example.com',
             'role' => UserRole::Owner->value,
+            'subscription_plan_id' => $plan->id,
             'password' => 'password123',
             'password_confirmation' => 'password123',
         ]);
 
-        $response->assertRedirect(route('client.panel'));
+        $response->assertRedirect(route('client.billing.index'));
         $this->assertAuthenticated();
 
         $user = User::firstWhere('email', 'owner-person@example.com');
 
         $this->assertNotNull($user);
         $this->assertSame(UserRole::Owner, $user->role);
+        $this->assertSame($plan->id, $user->subscription_plan_id);
+        $this->assertSame('2026-03-28 10:00:00', $user->owner_trial_ends_at?->format('Y-m-d H:i:s'));
+
+        Carbon::setTestNow();
+    }
+
+    public function test_owner_registration_requires_plan_selection(): void
+    {
+        $this->from('/client/register')->post('/client/register', [
+            'name' => 'Owner Person',
+            'email' => 'owner-person@example.com',
+            'role' => UserRole::Owner->value,
+            'password' => 'password123',
+            'password_confirmation' => 'password123',
+        ])
+            ->assertRedirect('/client/register')
+            ->assertSessionHasErrors('subscription_plan_id');
     }
 
     public function test_admin_role_cannot_be_self_registered(): void

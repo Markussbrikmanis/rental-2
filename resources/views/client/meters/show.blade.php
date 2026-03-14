@@ -2,7 +2,7 @@
 
 @section('content')
     <div class="vstack gap-4 py-4">
-        <div class="d-flex justify-content-between gap-3 flex-wrap">
+        <div class="d-flex justify-content-between gap-3 flex-wrap client-page-header">
             <div>
                 <h1 class="h2 mb-1">{{ $meter->name }}</h1>
                 <p class="text-body-secondary mb-0">
@@ -12,7 +12,9 @@
                     @endif
                 </p>
             </div>
-            <a href="{{ route('client.meters.edit', $meter) }}" class="btn btn-outline-secondary">{{ __('app.rental.common.edit') }}</a>
+            <div class="client-page-actions">
+                <a href="{{ route('client.meters.edit', $meter) }}" class="btn btn-outline-secondary">{{ __('app.rental.common.edit') }}</a>
+            </div>
         </div>
 
         <div class="card border-0 shadow-sm">

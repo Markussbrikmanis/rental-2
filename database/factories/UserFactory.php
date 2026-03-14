@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use App\Enums\UserRole;
+use App\Models\SubscriptionPlan;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
@@ -29,6 +30,9 @@ class UserFactory extends Factory
             'email' => fake()->unique()->safeEmail(),
             'email_verified_at' => now(),
             'role' => UserRole::Tenant,
+            'owner_plan' => null,
+            'owner_trial_ends_at' => null,
+            'subscription_plan_id' => null,
             'invoice_number_format' => '{year}-{num}',
             'invoice_vat_enabled' => false,
             'invoice_vat_rate' => 21,
@@ -58,6 +62,8 @@ class UserFactory extends Factory
     {
         return $this->state(fn (array $attributes) => [
             'role' => UserRole::Owner,
+            'subscription_plan_id' => SubscriptionPlan::factory(),
+            'owner_trial_ends_at' => now()->addDays(14),
         ]);
     }
 

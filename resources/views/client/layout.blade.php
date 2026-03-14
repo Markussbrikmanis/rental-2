@@ -14,8 +14,32 @@
         @auth
             @php($currentUser = auth()->user())
 
-            <div class="client-shell">
-                <aside class="client-shell__sidebar">
+            <div class="client-shell" data-client-shell>
+                <button
+                    type="button"
+                    class="client-shell__menu-toggle"
+                    aria-label="{{ __('app.client.navigation.open_menu') }}"
+                    aria-controls="client-sidebar"
+                    aria-expanded="false"
+                    data-client-menu-toggle
+                >
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+
+                <div class="client-shell__overlay" data-client-menu-close></div>
+
+                <aside class="client-shell__sidebar" id="client-sidebar">
+                    <button
+                        type="button"
+                        class="client-shell__menu-close"
+                        aria-label="{{ __('app.client.navigation.close_menu') }}"
+                        data-client-menu-close
+                    >
+                        &times;
+                    </button>
+
                     <div class="client-shell__brand">
                         <div class="client-shell__brand-mark">N</div>
                         <div>
@@ -28,56 +52,80 @@
                         <a
                             href="{{ route('client.panel') }}"
                             class="client-shell__nav-link {{ request()->routeIs('client.panel') ? 'is-active' : '' }}"
+                            data-client-nav-link
                         >
                             {{ __('app.client.navigation.panel') }}
                         </a>
 
-                        @if ($currentUser->isOwner())
+                        @if ($currentUser->isAdmin())
+                            <a
+                                href="{{ route('client.admin.users.index') }}"
+                                class="client-shell__nav-link {{ request()->routeIs('client.admin.users.*') ? 'is-active' : '' }}"
+                                data-client-nav-link
+                            >
+                                {{ __('app.client.navigation.users') }}
+                            </a>
+                            <a
+                                href="{{ route('client.admin.owner-subscriptions.index') }}"
+                                class="client-shell__nav-link {{ request()->routeIs('client.admin.owner-subscriptions.*') ? 'is-active' : '' }}"
+                                data-client-nav-link
+                            >
+                                {{ __('app.client.navigation.owner_subscriptions') }}
+                            </a>
+                        @elseif ($currentUser->isOwner())
                             <a
                                 href="{{ route('client.properties.index') }}"
                                 class="client-shell__nav-link {{ request()->routeIs('client.properties.*') ? 'is-active' : '' }}"
+                                data-client-nav-link
                             >
                                 {{ __('app.client.navigation.properties') }}
                             </a>
                             <a
                                 href="{{ route('client.units.index') }}"
                                 class="client-shell__nav-link {{ request()->routeIs('client.units.*') ? 'is-active' : '' }}"
+                                data-client-nav-link
                             >
                                 {{ __('app.client.navigation.units') }}
                             </a>
                             <a
                                 href="{{ route('client.tenants.index') }}"
                                 class="client-shell__nav-link {{ request()->routeIs('client.tenants.*') ? 'is-active' : '' }}"
+                                data-client-nav-link
                             >
                                 {{ __('app.client.navigation.tenants') }}
                             </a>
                             <a
                                 href="{{ route('client.leases.index') }}"
                                 class="client-shell__nav-link {{ request()->routeIs('client.leases.*') || request()->routeIs('client.charge-rules.*') ? 'is-active' : '' }}"
+                                data-client-nav-link
                             >
                                 {{ __('app.client.navigation.leases') }}
                             </a>
                             <a
                                 href="{{ route('client.invoices.index') }}"
                                 class="client-shell__nav-link {{ request()->routeIs('client.invoices.*') ? 'is-active' : '' }}"
+                                data-client-nav-link
                             >
                                 {{ __('app.client.navigation.invoices') }}
                             </a>
                             <a
                                 href="{{ route('client.meters.index') }}"
                                 class="client-shell__nav-link {{ request()->routeIs('client.meters.*') ? 'is-active' : '' }}"
+                                data-client-nav-link
                             >
                                 {{ __('app.client.navigation.meters') }}
                             </a>
                             <a
                                 href="{{ route('client.reports.index') }}"
                                 class="client-shell__nav-link {{ request()->routeIs('client.reports.*') ? 'is-active' : '' }}"
+                                data-client-nav-link
                             >
                                 {{ __('app.client.navigation.reports') }}
                             </a>
                             <a
                                 href="{{ route('client.exports.index') }}"
                                 class="client-shell__nav-link {{ request()->routeIs('client.exports.*') ? 'is-active' : '' }}"
+                                data-client-nav-link
                             >
                                 {{ __('app.client.navigation.exports') }}
                             </a>
@@ -85,22 +133,33 @@
                             <a
                                 href="{{ route('client.tenant-leases.index') }}"
                                 class="client-shell__nav-link {{ request()->routeIs('client.tenant-leases.*') ? 'is-active' : '' }}"
+                                data-client-nav-link
                             >
                                 {{ __('app.client.navigation.my_contracts') }}
                             </a>
                             <a
                                 href="{{ route('client.tenant-invoices.index') }}"
                                 class="client-shell__nav-link {{ request()->routeIs('client.tenant-invoices.*') ? 'is-active' : '' }}"
+                                data-client-nav-link
                             >
                                 {{ __('app.client.navigation.my_invoices') }}
                             </a>
                             <a
                                 href="{{ route('client.tenant-meters.index') }}"
                                 class="client-shell__nav-link {{ request()->routeIs('client.tenant-meters.*') || request()->routeIs('client.tenant-meter-readings.*') ? 'is-active' : '' }}"
+                                data-client-nav-link
                             >
                                 {{ __('app.client.navigation.utility_readings') }}
                             </a>
                         @endif
+
+                        <a
+                            href="{{ route('client.profile.edit') }}"
+                            class="client-shell__nav-link {{ request()->routeIs('client.profile.*') || request()->routeIs('client.billing.*') ? 'is-active' : '' }}"
+                            data-client-nav-link
+                        >
+                            {{ __('app.client.navigation.profile') }}
+                        </a>
                     </nav>
                 </aside>
 
@@ -142,6 +201,22 @@
                             </div>
                         @endif
 
+                        @if (session('error'))
+                            <div class="alert alert-danger mb-4">
+                                {{ session('error') }}
+                            </div>
+                        @endif
+
+                        @if ($errors->any())
+                            <div class="alert alert-danger mb-4">
+                                <ul class="mb-0 ps-3">
+                                    @foreach ($errors->all() as $error)
+                                        <li>{{ $error }}</li>
+                                    @endforeach
+                                </ul>
+                            </div>
+                        @endif
+
                         @yield('content')
                     </main>
                 </div>
@@ -151,6 +226,22 @@
                 @if (session('status'))
                     <div class="alert alert-success mb-4">
                         {{ session('status') }}
+                    </div>
+                @endif
+
+                @if (session('error'))
+                    <div class="alert alert-danger mb-4">
+                        {{ session('error') }}
+                    </div>
+                @endif
+
+                @if ($errors->any())
+                    <div class="alert alert-danger mb-4">
+                        <ul class="mb-0 ps-3">
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
                     </div>
                 @endif
 

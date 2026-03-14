@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Client;
 
 use App\Http\Controllers\Controller;
+use App\Models\SubscriptionPlan;
 use App\Models\TenantProfile;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Http\RedirectResponse;
@@ -17,8 +18,19 @@ class ProfileController extends Controller
 {
     public function edit(Request $request): View
     {
+        $user = $request->user()->loadMissing('subscriptionPlan');
+
         return view('client.profile.edit', [
-            'user' => $request->user(),
+            'user' => $user,
+            'subscription' => $user->isOwner() ? $user->subscription('default') : null,
+            'plans' => $user->isOwner()
+                ? SubscriptionPlan::query()
+                    ->where('is_active', true)
+                    ->where('is_public', true)
+                    ->orderBy('sort_order')
+                    ->orderBy('name')
+                    ->get()
+                : collect(),
         ]);
     }
 

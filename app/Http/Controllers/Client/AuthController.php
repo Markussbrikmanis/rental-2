@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Client;
 
 use App\Enums\UserRole;
 use App\Http\Controllers\Controller;
+use App\Models\SubscriptionPlan;
 use App\Models\TenantProfile;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
@@ -51,23 +52,57 @@ class AuthController extends Controller
     {
         return view('client.auth.register', [
             'roles' => UserRole::selfRegistrationValues(),
+            'plans' => SubscriptionPlan::query()
+                ->where('is_active', true)
+                ->where('is_public', true)
+                ->orderBy('sort_order')
+                ->orderBy('name')
+                ->get(),
         ]);
     }
 
     public function register(Request $request): RedirectResponse
     {
+        $isOwner = $request->input('role') === UserRole::Owner->value;
+
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email'],
             'role' => ['required', Rule::in(UserRole::selfRegistrationValues())],
+            'subscription_plan_id' => [
+                'nullable',
+                Rule::requiredIf($isOwner),
+                Rule::exists('subscription_plans', 'id')->where(static function ($query): void {
+                    $query->where('is_active', true)->where('is_public', true);
+                }),
+            ],
             'password' => ['required', 'confirmed', 'min:8'],
         ], trans('app.validation.messages'), trans('app.validation.attributes'));
+
+        if (! $isOwner) {
+            unset($validated['subscription_plan_id']);
+        }
+
+        if ($isOwner) {
+            /** @var SubscriptionPlan|null $plan */
+            $plan = SubscriptionPlan::query()->find($validated['subscription_plan_id']);
+
+            if ($plan?->trial_enabled && $plan->trial_days) {
+                $validated['owner_trial_ends_at'] = now()->addDays($plan->trial_days);
+            }
+        }
 
         $user = User::create($validated);
         $this->syncTenantProfile($user);
 
         Auth::login($user);
         $request->session()->regenerate();
+
+        if ($user->isOwner()) {
+            return redirect()
+                ->route('client.billing.index')
+                ->with('status', __('app.subscription.messages.registration_completed'));
+        }
 
         return redirect()->route('client.panel');
     }

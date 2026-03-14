@@ -59,6 +59,21 @@
                             </select>
                         </div>
 
+                        <div class="col-12" data-owner-plan-field @style(old('role', 'tenant') === 'owner' ? '' : 'display: none;')>
+                            <label for="subscription_plan_id" class="form-label">{{ __('app.subscription.fields.plan') }}</label>
+                            <select id="subscription_plan_id" name="subscription_plan_id" class="form-select">
+                                <option value="">{{ __('app.subscription.select_plan') }}</option>
+                                @foreach ($plans as $plan)
+                                    <option value="{{ $plan->id }}" @selected((string) old('subscription_plan_id') === (string) $plan->id)>
+                                        {{ $plan->name }} · {{ $plan->propertyLimitLabel() }} · {{ $plan->display_price }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            <div class="form-text">
+                                {{ __('app.subscription.register_hint') }}
+                            </div>
+                        </div>
+
                         <div class="col-md-6">
                             <label for="password" class="form-label">{{ __('app.client.common.password') }}</label>
                             <input
@@ -90,4 +105,28 @@
             </div>
         </div>
     </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const roleField = document.getElementById('role');
+            const planField = document.querySelector('[data-owner-plan-field]');
+            const planSelect = document.getElementById('subscription_plan_id');
+
+            if (!roleField || !planField || !planSelect) {
+                return;
+            }
+
+            const syncPlanVisibility = () => {
+                const isOwner = roleField.value === 'owner';
+                planField.style.display = isOwner ? '' : 'none';
+
+                if (!isOwner) {
+                    planSelect.value = '';
+                }
+            };
+
+            roleField.addEventListener('change', syncPlanVisibility);
+            syncPlanVisibility();
+        });
+    </script>
 @endsection

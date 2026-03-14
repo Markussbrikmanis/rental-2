@@ -58,6 +58,10 @@
                         <button type="submit" class="btn btn-primary">{{ __('app.client.common.login') }}</button>
                     </form>
 
+                    <div class="mt-3">
+                        <a href="{{ route('password.request') }}" class="link-secondary">{{ __('app.client.password_reset.actions.forgot_password') }}</a>
+                    </div>
+
                     <div class="mt-4 pt-3 border-top">
                         <p class="mb-2 text-body-secondary">{{ __('app.client.messages.need_account') }}</p>
                         <a href="{{ route('client.register') }}" class="btn btn-outline-secondary">{{ __('app.client.login.register_cta') }}</a>

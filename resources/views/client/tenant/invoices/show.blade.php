@@ -4,14 +4,14 @@
     @php($outstanding = max((float) $invoice->total - (float) $invoice->payments->sum('amount'), 0))
 
     <div class="vstack gap-4 py-4">
-        <div class="d-flex justify-content-between gap-3 flex-wrap">
+        <div class="d-flex justify-content-between gap-3 flex-wrap client-page-header">
             <div>
                 <h1 class="h2 mb-1">{{ $invoice->number }}</h1>
                 <p class="text-body-secondary mb-0">
                     {{ $invoice->lease->propertyUnit->property->name }} / {{ $invoice->lease->propertyUnit->name }}
                 </p>
             </div>
-            <div class="d-flex gap-2 flex-wrap">
+            <div class="client-page-actions">
                 <a href="{{ route('client.tenant-invoices.download', $invoice) }}" class="btn btn-outline-secondary">{{ __('app.rental.documents.actions.download_pdf') }}</a>
                 <a href="{{ route('client.tenant-invoices.print', $invoice) }}" class="btn btn-outline-secondary" target="_blank" rel="noopener">{{ __('app.rental.documents.actions.print') }}</a>
             </div>

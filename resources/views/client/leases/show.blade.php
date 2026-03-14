@@ -2,14 +2,14 @@
 
 @section('content')
     <div class="vstack gap-4 py-4">
-        <div class="d-flex justify-content-between flex-wrap gap-3">
+        <div class="d-flex justify-content-between flex-wrap gap-3 client-page-header">
             <div>
                 <h1 class="h2 mb-1">{{ __('app.rental.leases.show.heading') }}</h1>
                 <p class="text-body-secondary mb-0">
                     {{ $lease->tenantProfile->full_name }} · {{ $lease->propertyUnit->property->name }} / {{ $lease->propertyUnit->name }}
                 </p>
             </div>
-            <div class="d-flex gap-2 flex-wrap">
+            <div class="client-page-actions">
                 <form method="POST" action="{{ route('client.leases.generate-invoice', $lease) }}">
                     @csrf
                     <button type="submit" class="btn btn-primary">{{ __('app.rental.invoices.actions.generate') }}</button>

@@ -24,8 +24,14 @@ class OwnerPropertyController extends Controller
         ]);
     }
 
-    public function create(): View
+    public function create(Request $request): View|RedirectResponse
     {
+        if (! $request->user()->canCreateProperty()) {
+            return redirect()
+                ->route('client.properties.index')
+                ->with('error', $this->propertyCreationError($request));
+        }
+
         return view('client.properties.create', [
             'property' => new Property([
                 'country' => __('app.properties.defaults.country'),
@@ -37,6 +43,12 @@ class OwnerPropertyController extends Controller
 
     public function store(Request $request): RedirectResponse
     {
+        if (! $request->user()->canCreateProperty()) {
+            return redirect()
+                ->route('client.properties.index')
+                ->with('error', $this->propertyCreationError($request));
+        }
+
         $property = $request->user()->properties()->create(
             $this->validatedData($request),
         );
@@ -132,5 +144,19 @@ class OwnerPropertyController extends Controller
     private function ensureOwnership(Request $request, Property $property): void
     {
         abort_unless($property->user_id === $request->user()->id, 404);
+    }
+
+    private function propertyCreationError(Request $request): string
+    {
+        $user = $request->user();
+
+        if (! $user->ownerHasBillingAccess()) {
+            return __('app.subscription.messages.billing_required');
+        }
+
+        return __('app.subscription.messages.property_limit_reached', [
+            'plan' => $user->ownerPlan()?->name ?? __('app.subscription.fallback_plan_name'),
+            'count' => $user->ownerPropertyLimit(),
+        ]);
     }
 }

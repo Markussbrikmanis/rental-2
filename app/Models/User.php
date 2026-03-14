@@ -5,15 +5,17 @@ namespace App\Models;
 use App\Enums\UserRole;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Laravel\Cashier\Billable;
 
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable;
+    use Billable, HasFactory, Notifiable;
 
     /**
      * The attributes that are mass assignable.
@@ -24,6 +26,8 @@ class User extends Authenticatable
         'name',
         'email',
         'role',
+        'owner_trial_ends_at',
+        'subscription_plan_id',
         'invoice_number_format',
         'invoice_sender_name',
         'invoice_sender_address',
@@ -61,6 +65,7 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
             'role' => UserRole::class,
+            'owner_trial_ends_at' => 'datetime',
             'invoice_vat_enabled' => 'boolean',
             'invoice_vat_rate' => 'decimal:2',
         ];
@@ -81,6 +86,61 @@ class User extends Authenticatable
         return $this->role === UserRole::Tenant;
     }
 
+    public function ownerPlan(): ?SubscriptionPlan
+    {
+        if (! $this->isOwner()) {
+            return null;
+        }
+
+        return $this->subscriptionPlan;
+    }
+
+    public function ownerPropertyLimit(): ?int
+    {
+        if ($this->ownerHasUnlimitedPlan()) {
+            return null;
+        }
+
+        return $this->ownerPlan()?->property_limit;
+    }
+
+    public function ownerHasUnlimitedPlan(): bool
+    {
+        return (bool) $this->ownerPlan()?->is_unlimited;
+    }
+
+    public function ownerTrialActive(): bool
+    {
+        return ($this->owner_trial_ends_at !== null && $this->owner_trial_ends_at->isFuture())
+            || $this->onTrial('default');
+    }
+
+    public function ownerHasBillingAccess(): bool
+    {
+        if (! $this->isOwner() || $this->subscription_plan_id === null) {
+            return false;
+        }
+
+        return $this->ownerHasUnlimitedPlan()
+            || $this->subscribed('default')
+            || $this->ownerTrialActive();
+    }
+
+    public function canCreateProperty(): bool
+    {
+        if (! $this->isOwner()) {
+            return false;
+        }
+
+        if (! $this->ownerHasBillingAccess()) {
+            return false;
+        }
+
+        $propertyLimit = $this->ownerPropertyLimit();
+
+        return $propertyLimit === null || $this->properties()->count() < $propertyLimit;
+    }
+
     public function invoiceNumberFormat(): string
     {
         return $this->invoice_number_format ?: '{year}-{num}';
@@ -92,6 +152,14 @@ class User extends Authenticatable
     public function properties(): HasMany
     {
         return $this->hasMany(Property::class);
+    }
+
+    /**
+     * @return BelongsTo<SubscriptionPlan, $this>
+     */
+    public function subscriptionPlan(): BelongsTo
+    {
+        return $this->belongsTo(SubscriptionPlan::class);
     }
 
     /**
