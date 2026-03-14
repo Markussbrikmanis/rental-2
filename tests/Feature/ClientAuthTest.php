@@ -99,9 +99,11 @@ class ClientAuthTest extends TestCase
         ];
 
         foreach ($expectations as $role => $text) {
-            $user = User::factory()->create([
-                'role' => $role,
-            ]);
+            $user = $role === UserRole::Owner->value
+                ? User::factory()->owner()->create()
+                : User::factory()->create([
+                    'role' => $role,
+                ]);
 
             $this->actingAs($user)
                 ->get('/client/panel')

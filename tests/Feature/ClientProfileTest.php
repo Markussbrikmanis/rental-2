@@ -17,7 +17,7 @@ class ClientProfileTest extends TestCase
     public function test_authenticated_user_can_view_profile_page(): void
     {
         $user = User::factory()->create([
-            'role' => UserRole::Owner,
+            'role' => UserRole::Tenant,
         ]);
 
         $this->actingAs($user)
@@ -50,9 +50,7 @@ class ClientProfileTest extends TestCase
     {
         Storage::fake('public');
 
-        $user = User::factory()->create([
-            'role' => UserRole::Owner,
-        ]);
+        $user = User::factory()->owner()->create();
 
         $this->actingAs($user)
             ->patch(route('client.profile.update'), [
@@ -84,7 +82,7 @@ class ClientProfileTest extends TestCase
     public function test_authenticated_user_can_update_password(): void
     {
         $user = User::factory()->create([
-            'role' => UserRole::Owner,
+            'role' => UserRole::Tenant,
         ]);
 
         $this->actingAs($user)
@@ -101,7 +99,7 @@ class ClientProfileTest extends TestCase
     public function test_authenticated_user_can_delete_account(): void
     {
         $user = User::factory()->create([
-            'role' => UserRole::Owner,
+            'role' => UserRole::Tenant,
         ]);
 
         $this->actingAs($user)

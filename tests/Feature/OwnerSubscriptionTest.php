@@ -131,6 +131,35 @@ class OwnerSubscriptionTest extends TestCase
             ->assertSee('Mans abonements');
     }
 
+    public function test_unpaid_owner_is_redirected_to_billing_from_owner_ui(): void
+    {
+        $plan = SubscriptionPlan::factory()->create([
+            'property_limit' => 3,
+            'is_unlimited' => false,
+        ]);
+
+        $owner = User::factory()->owner()->create([
+            'subscription_plan_id' => $plan->id,
+            'owner_trial_ends_at' => null,
+        ]);
+
+        $this->actingAs($owner)
+            ->get(route('client.panel'))
+            ->assertRedirect(route('client.billing.index'));
+
+        $this->actingAs($owner)
+            ->get(route('client.properties.index'))
+            ->assertRedirect(route('client.billing.index'));
+
+        $this->actingAs($owner)
+            ->get(route('client.profile.edit'))
+            ->assertRedirect(route('client.billing.index'));
+
+        $this->actingAs($owner)
+            ->get(route('client.billing.index'))
+            ->assertOk();
+    }
+
     public function test_admin_can_manage_subscription_plan_catalog(): void
     {
         $admin = User::factory()->admin()->create();

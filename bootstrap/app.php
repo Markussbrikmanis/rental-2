@@ -20,6 +20,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'client.guest' => \App\Http\Middleware\RedirectIfAuthenticatedToClient::class,
             'role' => \App\Http\Middleware\EnsureUserHasRole::class,
+            'owner.subscription' => \App\Http\Middleware\EnsureOwnerSubscriptionIsActive::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

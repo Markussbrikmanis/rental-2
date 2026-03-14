@@ -57,7 +57,7 @@ Route::prefix('client')
             Route::post('/register', [AuthController::class, 'register'])->name('register.store');
         });
 
-        Route::middleware(['auth', 'role:admin,owner,tenant'])->group(function (): void {
+        Route::middleware(['auth', 'role:admin,owner,tenant', 'owner.subscription'])->group(function (): void {
             Route::get('/panel', ClientPanelController::class)->name('panel');
             Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
             Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
@@ -73,7 +73,9 @@ Route::prefix('client')
             Route::get('abonements/portal', [OwnerBillingController::class, 'portal'])->name('billing.portal');
             Route::get('abonements/success', [OwnerBillingController::class, 'success'])->name('billing.success');
             Route::get('abonements/cancel', [OwnerBillingController::class, 'cancel'])->name('billing.cancel');
+        });
 
+        Route::middleware(['auth', 'role:owner', 'owner.subscription'])->group(function (): void {
             Route::resource('ipasumi', OwnerPropertyController::class)
                 ->parameters(['ipasumi' => 'property'])
                 ->names([

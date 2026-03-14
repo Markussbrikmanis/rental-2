@@ -336,6 +336,7 @@ return [
         'messages' => [
             'registration_completed' => 'Konts ir izveidots. Pārskatiet un aktivizējiet savu abonementu.',
             'billing_required' => 'Lai pievienotu jaunus īpašumus, vispirms jāaktivizē abonements.',
+            'inactive_redirect' => 'Jūsu abonements pašlaik nav aktīvs. Lai turpinātu darbu, atveriet apmaksas skatu un aktivizējiet plānu.',
             'property_limit_reached' => 'Jūsu plānam ":plan" ir sasniegts īpašumu limits (:count). Lai pievienotu vairāk īpašumu, nepieciešams lielāks plāns vai administratora piešķirts neierobežots plāns.',
             'owner_subscription_updated' => 'Īpašnieka ":name" plāns ir atjaunināts.',
             'plan_selected' => 'Plāns ":plan" ir izvēlēts.',
